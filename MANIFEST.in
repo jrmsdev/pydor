@@ -1,2 +1,7 @@
 include *.py
 include *.sh
+
+include docker/Dockerfile
+include docker/sudoers
+
+recursive-include docker *.sh

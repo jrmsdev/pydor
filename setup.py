@@ -15,6 +15,7 @@ def main():
 		setup_requires = ['wheel>=0.33'],
 		install_requires = [],
 		py_modules = ['pydor'],
+		test_suite = 'pydor_test',
 	)
 
 if __name__ == '__main__':

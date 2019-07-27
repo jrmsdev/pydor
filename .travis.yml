@@ -1,0 +1,30 @@
+sudo: false
+language: python
+
+os: linux
+dist: bionic
+
+git:
+  depth: 3
+  submodules: false
+
+branches:
+  only:
+    - master
+    - next
+
+python:
+  - "3.6"
+  - "3.7"
+  - "nightly"
+
+matrix:
+  fast_finish: true
+
+cache: pip
+
+install:
+  - pip install --upgrade -r .ci/requirements.txt
+
+script:
+  - ./check.sh

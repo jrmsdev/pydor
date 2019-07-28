@@ -34,23 +34,23 @@ RUN useradd -c pydor -m -d /home/pydor -s /bin/bash -G staff -g ${PYDOR_GID} -u 
 RUN chgrp -v staff /usr/local/bin
 RUN chmod -v g+ws /usr/local/bin
 
-### USER pydor:pydor
 WORKDIR /home/pydor
-
 RUN sudo -u pydor mkdir -vp src
 COPY --chown=pydor:pydor . src
 
 WORKDIR /home/pydor/src
+
 RUN sudo -u pydor pip3 install --system --upgrade -r requirements-dev.txt
 RUN sudo -u pydor pip3 install --system --upgrade -e .
-### RUN pip3 list
 
 RUN rm -rf /home/pydor/.cache/pip
-RUN echo "PS1='pydor@docker:\W\$ '" >>/home/pydor/.bashrc
 
 USER pydor:pydor
 
+RUN echo "PS1='pydor@docker:\W\$ '" >>/home/pydor/.bashrc
 RUN git config --global alias.st status
 RUN git config --global alias.ci commit
+
+RUN pip3 list
 
 CMD exec /bin/bash -l

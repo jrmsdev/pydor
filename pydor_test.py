@@ -36,7 +36,7 @@ class TestConfig(TestCase):
 		_tearDown('config')
 
 	def test_default(t):
-		assert isinstance(pydor.config, pydor._Config)
+		assert isinstance(pydor.config, pydor.Config)
 		assert isinstance(pydor.config._cfg, ConfigParser)
 		assert pydor.config._cfg.defaults() == {
 			'requirements': 'requirements.txt',

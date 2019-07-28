@@ -1,32 +1,49 @@
+# coding: utf-8
 # Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 # See LICENSE file.
+
+"""
+PYthon Dependencies vendOR
+"""
+
+__all__ = (
+	'Error',
+	'Path',
+	'Config',
+	'main',
+)
+
+__author__ = 'Jeremías Casteglione <jrmsdev@gmail.com>'
+__version__ = 0.0
+__license__ = 'BSD'
 
 import sys
 
 from configparser import ConfigParser, ExtendedInterpolation
 from os import path as ospath
 
-__all__ = ['main']
-
 # error class
 
 class Error(Exception):
+	"""Exception class for raising errors."""
 	pass
 
 # filesystem paths manager
 
-class _Path(object):
+class Path(object):
+	"""Manage filesystem paths."""
 
 	def join(self, *parts):
 		return ospath.join(*parts)
 
 # config manager
 
-_ConfigDefault = {
+ConfigDefault = {
 	'requirements': 'requirements.txt',
 }
 
-class _Config(object):
+class Config(object):
+	"""Manage main configuration."""
 	_cfg = None
 
 	def __init__(self):
@@ -37,21 +54,23 @@ class _Config(object):
 			strict = True,
 			interpolation = ExtendedInterpolation(),
 			default_section = 'default')
-		self._cfg['default'] = _ConfigDefault
+		self._cfg['default'] = ConfigDefault
 
-	def read(self):
-		ok = self._cfg.read('pydor.ini')
+	def read(self, filename = 'pydor.ini'):
+		"""Read configuration file."""
+		ok = self._cfg.read(filename)
 		if len(ok) < 1:
-			raise Error('pydor.ini config file not found')
+			raise Error(f"{filename} config file not found")
 
 # helper objects
 
-path = _Path()
-config = _Config()
+path = Path()
+config = Config()
 
 # main
 
 def main():
+	"""Main function for command entrypoint."""
 	return 0
 
 if __name__ == '__main__':

@@ -7,6 +7,12 @@ include .dockerignore
 include docker/Dockerfile
 recursive-include docker *.sh
 
+include docs/Makefile
+include docs/build.sh
+include docs/conf.py
+include docs/requirements.txt
+recursive-include docs *.rst
+
 include requirements-dev.txt
 
 recursive-include testdata pydor.ini

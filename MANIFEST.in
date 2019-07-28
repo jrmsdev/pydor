@@ -16,3 +16,4 @@ recursive-include docs *.rst
 include requirements-dev.txt
 
 recursive-include testdata pydor.ini
+recursive-include testdata setup.cfg

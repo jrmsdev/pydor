@@ -50,10 +50,17 @@ class TestConfig(TestCase):
 
 	def test_read(t):
 		pydor.config.read()
+		assert pydor.config._readFiles == ['pydor.ini']
+		assert pydor.config._cfg.has_section('pydor')
 
-	def test_read_error(t):
-		with pytest.raises(pydor.Error, match = 'config file not found'):
-			pydor.config.read(filename = 'nofile.ini')
+	def test_other_files(t):
+		try:
+			_setUp('config.other_files')
+			pydor.config.read()
+			assert pydor.config._readFiles == ['setup.cfg']
+			assert pydor.config._cfg.has_section('pydor')
+		finally:
+			_tearDown('config.other_files')
 
 # test pydor commands
 
@@ -67,9 +74,6 @@ class TestPydor(TestCase):
 
 	def test_main(t):
 		assert pydor.main() == 0
-
-	def test_main_cfg_error(t):
-		assert pydor.main(filename = 'nofile.ini') == 1
 
 # main
 

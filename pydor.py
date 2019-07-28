@@ -67,6 +67,7 @@ ConfigDefault = {
 class Config(object):
 	"""Manage main configuration."""
 	_cfg = None
+	_readFiles = None
 
 	def __init__(self):
 		self._cfg = ConfigParser(defaults = {},
@@ -80,9 +81,7 @@ class Config(object):
 
 	def read(self, filename = 'pydor.ini'):
 		"""Read configuration file."""
-		ok = self._cfg.read(filename)
-		if len(ok) < 1:
-			raise Error(f"{filename} config file not found")
+		self._readFiles = self._cfg.read(['setup.cfg', filename])
 
 # helper objects
 

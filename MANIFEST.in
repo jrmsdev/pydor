@@ -1,6 +1,8 @@
 include *.py
 include *.sh
 
+include .coveragerc
+
 include .dockerignore
 include docker/Dockerfile
 recursive-include docker *.sh

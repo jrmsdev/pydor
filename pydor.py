@@ -34,6 +34,7 @@ class Path(object):
 	"""Manage filesystem paths."""
 
 	def join(self, *parts):
+		"""Join name parts."""
 		return ospath.join(*parts)
 
 # config manager
@@ -69,9 +70,14 @@ config = Config()
 
 # main
 
-def main():
+def main(filename = 'pydor.ini'):
 	"""Main function for command entrypoint."""
+	try:
+		config.read(filename = filename)
+	except Error as err:
+		print('ERROR:', err, file = sys.stderr)
+		return 1
 	return 0
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
 	sys.exit(main())

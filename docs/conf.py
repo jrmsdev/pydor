@@ -15,6 +15,8 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import pydor
+
 # -- Project information -----------------------------------------------------
 
 project = 'pydor'
@@ -22,7 +24,8 @@ copyright = '2019, Jeremías Casteglione'
 author = 'Jeremías Casteglione'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0'
+release = pydor.__version__
+del pydor
 
 # -- General configuration ---------------------------------------------------
 

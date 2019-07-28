@@ -4,11 +4,12 @@
 # Copyright (c) Jeremías Casteglione <jrmsdev@gmail.com>
 # See LICENSE file.
 
+import pydor
 from setuptools import setup
 
 def main():
 	setup(
-		version = '0.0',
+		version = pydor.__version__,
 		author = 'Jeremías Casteglione',
 		author_email = 'jrmsdev@gmail.com',
 		python_requires = '~=3.6',

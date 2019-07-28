@@ -7,8 +7,8 @@ PYthon Dependencies vendOR
 """
 
 __author__ = 'Jeremías Casteglione <jrmsdev@gmail.com>'
-__version__ = 0.0
 __license__ = 'BSD'
+__version__ = '0.0'
 
 import logging
 import sys

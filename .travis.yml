@@ -23,7 +23,12 @@ matrix:
 cache: pip
 
 install:
+  - test -z "${CODECOV_TOKEN}" || pip install --upgrade codecov
   - pip install --upgrade -r requirements-dev.txt
 
 script:
   - ./check.sh
+
+after_success:
+  - test -z "${CODECOV_TOKEN}" || ./coverage.sh
+  - test -z "${CODECOV_TOKEN}" || codecov

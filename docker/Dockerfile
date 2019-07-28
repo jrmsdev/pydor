@@ -13,7 +13,7 @@ RUN apt-get update
 
 RUN apt-get dist-upgrade -y --purge
 RUN apt-get install -y --no-install-recommends sudo python3 python3-pip \
-	git less vim-tiny unzip bash-completion
+	git less vim-tiny unzip bash-completion make
 
 RUN apt-get clean
 RUN apt-get autoremove -y --purge
@@ -48,7 +48,9 @@ RUN rm -rf /home/pydor/.cache/pip
 USER pydor:pydor
 
 RUN echo "PS1='pydor@docker:\W\$ '" >>/home/pydor/.bashrc
+
 RUN echo 'alias vim=vim.tiny' >>/home/pydor/.bashrc
+RUN printf 'syntax on\nset bg=dark\ncolorscheme desert\n' >/home/pydor/.vimrc
 
 RUN git config --global alias.st status
 RUN git config --global alias.ci commit

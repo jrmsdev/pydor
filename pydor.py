@@ -4,8 +4,21 @@
 import sys
 
 from configparser import ConfigParser, ExtendedInterpolation
+from os import path as ospath
 
 __all__ = ['main']
+
+# error class
+
+class Error(Exception):
+	pass
+
+# filesystem paths manager
+
+class _Path(object):
+
+	def join(self, *parts):
+		return ospath.join(*parts)
 
 # config manager
 
@@ -26,8 +39,14 @@ class _Config(object):
 			default_section = 'default')
 		self._cfg['default'] = _ConfigDefault
 
+	def read(self):
+		ok = self._cfg.read('pydor.ini')
+		if len(ok) < 1:
+			raise Error('pydor.ini config file not found')
+
 # helper objects
 
+path = _Path()
 config = _Config()
 
 # main

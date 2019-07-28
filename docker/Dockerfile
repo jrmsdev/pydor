@@ -48,6 +48,8 @@ RUN rm -rf /home/pydor/.cache/pip
 USER pydor:pydor
 
 RUN echo "PS1='pydor@docker:\W\$ '" >>/home/pydor/.bashrc
+RUN echo 'alias vim=vim.tiny' >>/home/pydor/.bashrc
+
 RUN git config --global alias.st status
 RUN git config --global alias.ci commit
 

@@ -10,6 +10,7 @@ __author__ = 'Jeremías Casteglione <jrmsdev@gmail.com>'
 __license__ = 'BSD'
 __version__ = '0.0'
 
+import enum
 import logging
 import sys
 
@@ -17,6 +18,7 @@ from configparser import ConfigParser, ExtendedInterpolation
 from os import path as ospath
 
 __all__ = (
+	'ErrorType',
 	'Error',
 	'Log',
 	'Path',
@@ -24,11 +26,27 @@ __all__ = (
 	'main',
 )
 
-# error class
+# errors manager
+
+@enum.unique
+class ErrorType(enum.Enum):
+	"""Map error types with exit return status."""
+	ConfigInvalid = 10
 
 class Error(Exception):
-	"""Exception class for raising errors."""
-	pass
+	"""Base class for raising errors."""
+
+	_msg = None
+	_typ = None
+	status = None
+
+	def __init__(self, typ, msg):
+		self._msg = str(msg)
+		self._typ = str(typ)
+		self.status = int(ErrorType[typ])
+
+	def __str__(self):
+		return f"{self._typ}: {self._msg}"
 
 # logger class
 
@@ -91,13 +109,13 @@ config = Config()
 
 # main
 
-def main(filename = 'pydor.ini'):
+def main():
 	"""Main command entrypoint."""
 	try:
-		config.read(filename = filename)
+		config.read()
 	except Error as err:
-		log.error('ERROR: %s', err)
-		return 1
+		log.error(err)
+		return err.status
 	return 0
 
 if __name__ == '__main__':

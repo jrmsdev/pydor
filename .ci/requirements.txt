@@ -1,4 +1,0 @@
-setuptools>=41.0
-setuptools_scm>=3.3
-wheel>=0.33
-check-manifest>=0.37

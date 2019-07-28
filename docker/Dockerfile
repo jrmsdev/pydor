@@ -22,30 +22,35 @@ RUN rm -rf /var/lib/apt/lists/*
 RUN rm -f /var/cache/apt/archives/*.deb
 RUN rm -f /var/cache/apt/*cache.bin
 
-COPY docker/sudoers /etc/sudoers.d/pydor
+RUN printf 'pydor\tALL=NOPASSWD: ALL\n' >/etc/sudoers.d/pydor
 RUN chmod 440 /etc/sudoers.d/pydor
 
 ARG PYDOR_UID=1000
 ARG PYDOR_GID=1000
 
 RUN groupadd -g ${PYDOR_GID} pydor
-RUN useradd -c pydor -m -d /home/pydor -s /bin/bash -g ${PYDOR_GID} -u ${PYDOR_UID} pydor
+RUN useradd -c pydor -m -d /home/pydor -s /bin/bash -G staff -g ${PYDOR_GID} -u ${PYDOR_UID} pydor
 
-USER pydor:pydor
+RUN chgrp -v staff /usr/local/bin
+RUN chmod -v g+ws /usr/local/bin
+
+### USER pydor:pydor
 WORKDIR /home/pydor
 
-COPY --chown=pydor:pydor .ci/requirements.txt /tmp/requirements.txt
-RUN pip3 install --no-warn-script-location -r /tmp/requirements.txt
+RUN sudo -u pydor mkdir -vp src
+COPY --chown=pydor:pydor . src
 
-RUN rm -rf .cache/pip
-RUN rm -f /tmp/requirements.txt
+WORKDIR /home/pydor/src
+RUN sudo -u pydor pip3 install --system --upgrade -r requirements-dev.txt
+RUN sudo -u pydor pip3 install --system --upgrade -e .
+### RUN pip3 list
 
-RUN echo "PS1='pydor@docker:\W\$ '" >>.bashrc
+RUN rm -rf /home/pydor/.cache/pip
+RUN echo "PS1='pydor@docker:\W\$ '" >>/home/pydor/.bashrc
+
+USER pydor:pydor
 
 RUN git config --global alias.st status
 RUN git config --global alias.ci commit
 
-RUN mkdir -vp src
-WORKDIR /home/pydor/src
-
-CMD /bin/bash -i -l
+CMD exec /bin/bash -l

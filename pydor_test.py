@@ -84,7 +84,10 @@ class TestPydor(TestCase):
 		_tearDown('cmd/main')
 
 	def test_main(t):
-		assert pydor.main() == 0
+		assert pydor.main([]) == 0
+
+	def test_main_error(t):
+		assert pydor.main(['--log', 'invalid']) == pydor.ErrorType['ArgsError'].value
 
 # main
 

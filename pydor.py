@@ -87,7 +87,7 @@ class Config(object):
 # command line args manager
 
 class CmdArgs(ArgumentParser):
-	"""Parse command line arguments."""
+	"""Manage command line arguments."""
 
 	def __init__(self):
 		super().__init__(prog = 'pydor', description = 'PYthon Dependencies vendOR')
@@ -97,6 +97,7 @@ class CmdArgs(ArgumentParser):
 			default = 'warning', metavar = 'level')
 
 	def parse_args(self, argv):
+		"""Parse command args, then set log level from parsed options."""
 		x = super().parse_args(args = argv)
 		try:
 			log.setLevel(x.log.upper())

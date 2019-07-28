@@ -41,6 +41,7 @@ COPY --chown=pydor:pydor . src
 WORKDIR /home/pydor/src
 
 RUN sudo -u pydor pip3 install --system --upgrade -r requirements-dev.txt
+RUN sudo -u pydor pip3 install --system --upgrade -r docs/requirements.txt
 RUN sudo -u pydor pip3 install --system --upgrade -e .
 
 RUN rm -rf /home/pydor/.cache/pip

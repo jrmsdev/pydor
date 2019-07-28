@@ -10,9 +10,20 @@ import pytest
 
 _srcdir = path.abspath(getcwd())
 
-# set logger to only show critical messages
+# mock pydor.log
 
 pydor.log.setLevel('CRITICAL')
+
+class MockLog(object):
+
+	def setLevel(self, level):
+		pass
+
+	def error(self, msg, *args):
+		pass
+
+del pydor.log
+pydor.log = MockLog()
 
 # setUp / tearDown testing env
 
@@ -87,7 +98,14 @@ class TestPydor(TestCase):
 		assert pydor.main([]) == 0
 
 	def test_main_error(t):
-		assert pydor.main(['--log', 'invalid']) == pydor.ErrorType['ArgsError'].value
+		def mockSetLevel(level):
+			raise ValueError(level)
+		try:
+			pydor.log.setLevel = mockSetLevel
+			assert pydor.main(['--log', 'invalid']) == pydor.ErrorType['ArgsError'].value
+		finally:
+			del pydor.log
+			pydor.log = MockLog()
 
 # main
 

@@ -3,6 +3,7 @@
 
 from configparser import ConfigParser
 from os import getcwd, path, chdir
+from subprocess import call as cmdrun
 from unittest import TestCase, main
 
 import pydor
@@ -86,7 +87,7 @@ class TestConfig(TestCase):
 
 # test pydor commands
 
-class TestPydor(TestCase):
+class TestMain(TestCase):
 
 	def setUp(t):
 		_setUp('cmd/main')
@@ -103,6 +104,20 @@ class TestPydor(TestCase):
 		try:
 			pydor.log.setLevel = mockSetLevel
 			assert pydor.main(['--log', 'invalid']) == pydor.ErrorType['ArgsError'].value
+		finally:
+			del pydor.log
+			pydor.log = MockLog()
+
+class TestPydor(TestCase):
+
+	def test_cmd(t):
+		# test it with an error so it doesn't really runs
+		def mockSetLevel(level):
+			raise ValueError(level)
+		try:
+			pydor.log.setLevel = mockSetLevel
+			rc = cmdrun(['python3', 'pydor.py', '--log', 'invalid'])
+			assert rc == pydor.ErrorType['ArgsError'].value
 		finally:
 			del pydor.log
 			pydor.log = MockLog()

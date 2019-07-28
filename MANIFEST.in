@@ -1,7 +1,9 @@
 include *.py
 include *.sh
 
+include .dockerignore
 include docker/Dockerfile
 include docker/sudoers
-
 recursive-include docker *.sh
+
+include requirements-dev.txt

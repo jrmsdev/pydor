@@ -12,7 +12,7 @@ _srcdir = path.abspath(getcwd())
 
 # set logger to only show critical messages
 
-pydor.log._log.setLevel('CRITICAL')
+pydor.log.setLevel('CRITICAL')
 
 # setUp / tearDown testing env
 
@@ -22,6 +22,17 @@ def _setUp(env):
 
 def _tearDown(env):
 	chdir(_srcdir)
+
+# test errors management
+
+class TestError(TestCase):
+
+	def test_default(t):
+		err = pydor.Error('ConfigError', 'testing')
+		assert err._typ == 'ConfigError'
+		assert err.status == 10
+		assert err.status == pydor.ErrorType.ConfigError.value
+		assert str(err) == 'ConfigError: testing'
 
 # test pydor.path
 

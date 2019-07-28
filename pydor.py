@@ -20,7 +20,6 @@ from os import path as ospath
 __all__ = (
 	'ErrorType',
 	'Error',
-	'Log',
 	'Path',
 	'Config',
 	'main',
@@ -31,7 +30,7 @@ __all__ = (
 @enum.unique
 class ErrorType(enum.Enum):
 	"""Map error types with exit return status."""
-	ConfigInvalid = 10
+	ConfigError = 10
 
 class Error(Exception):
 	"""Base class for raising errors."""
@@ -42,30 +41,11 @@ class Error(Exception):
 
 	def __init__(self, typ, msg):
 		self._msg = str(msg)
-		self._typ = str(typ)
-		self.status = int(ErrorType[typ])
+		self._typ = ErrorType[typ].name
+		self.status = ErrorType[typ].value
 
 	def __str__(self):
 		return f"{self._typ}: {self._msg}"
-
-# logger class
-
-class Log(object):
-	"""Logger class.
-
-	Default level: WARNING
-	"""
-
-	_log = None
-
-	def __init__(self):
-		self._log = logging.getLogger('pydor')
-		self._log.setLevel('WARNING')
-
-	def error(self, msg, *args):
-		"""Error messages."""
-		msg = 'ERROR: ' + msg
-		self._log.error(msg, *args)
 
 # filesystem paths manager
 
@@ -103,7 +83,7 @@ class Config(object):
 
 # helper objects
 
-log = Log()
+log = logging.getLogger('pydor')
 path = Path()
 config = Config()
 
@@ -112,6 +92,7 @@ config = Config()
 def main():
 	"""Main command entrypoint."""
 	try:
+		log.setLevel('WARNING')
 		config.read()
 	except Error as err:
 		log.error(err)

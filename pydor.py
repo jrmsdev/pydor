@@ -14,6 +14,7 @@ import enum
 import logging
 import sys
 
+from argparse import ArgumentParser
 from configparser import ConfigParser, ExtendedInterpolation
 from os import path as ospath
 
@@ -22,6 +23,7 @@ __all__ = (
 	'Error',
 	'Path',
 	'Config',
+	'CmdArgs',
 	'main',
 )
 
@@ -31,6 +33,7 @@ __all__ = (
 class ErrorType(enum.Enum):
 	"""Map error types with exit return status."""
 	ConfigError = 10
+	ArgsError = 11
 
 class Error(Exception):
 	"""Base class for raising errors."""
@@ -81,7 +84,27 @@ class Config(object):
 		"""Read configuration file."""
 		self._readFiles = self._cfg.read(['setup.cfg', filename])
 
-# helper objects
+# command line args manager
+
+class CmdArgs(ArgumentParser):
+	"""Parse command line arguments."""
+
+	def __init__(self):
+		super().__init__(prog = 'pydor', description = 'PYthon Dependencies vendOR')
+		self.add_argument('--version',
+			action = 'version', version = '%(prog)s version ' + __version__)
+		self.add_argument('--log', help = 'set log level (default: warning)',
+			default = 'warning', metavar = 'level')
+
+	def parse_args(self, argv):
+		x = super().parse_args(args = argv)
+		try:
+			log.setLevel(x.log.upper())
+		except ValueError:
+			raise Error('ArgsError', f"invalid log level: {x.log}")
+		return x
+
+# global helper objects
 
 log = logging.getLogger('pydor')
 path = Path()
@@ -89,10 +112,11 @@ config = Config()
 
 # main
 
-def main():
+def main(argv = None):
 	"""Main command entrypoint."""
 	try:
-		log.setLevel('WARNING')
+		cmd = CmdArgs()
+		args = cmd.parse_args(argv)
 		config.read()
 	except Error as err:
 		log.error(err)

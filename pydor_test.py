@@ -2,13 +2,17 @@
 # See LICENSE file.
 
 from configparser import ConfigParser
-from unittest import TestCase, main
 from os import getcwd, path, chdir
+from unittest import TestCase, main
 
 import pydor
 import pytest
 
 _srcdir = path.abspath(getcwd())
+
+# set logger to only show critical messages
+
+pydor.log._log.setLevel('CRITICAL')
 
 # setUp / tearDown testing env
 

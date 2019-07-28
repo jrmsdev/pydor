@@ -1,4 +1,4 @@
 #!/bin/sh
 set -eu
-(cd docs && make dirhtml BUILDDIR=.)
+(cd docs && make html BUILDDIR=_build)
 exit 0

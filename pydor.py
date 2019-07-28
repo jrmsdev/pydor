@@ -6,27 +6,48 @@
 PYthon Dependencies vendOR
 """
 
-__all__ = (
-	'Error',
-	'Path',
-	'Config',
-	'main',
-)
-
 __author__ = 'Jeremías Casteglione <jrmsdev@gmail.com>'
 __version__ = 0.0
 __license__ = 'BSD'
 
+import logging
 import sys
 
 from configparser import ConfigParser, ExtendedInterpolation
 from os import path as ospath
+
+__all__ = (
+	'Error',
+	'Log',
+	'Path',
+	'Config',
+	'main',
+)
 
 # error class
 
 class Error(Exception):
 	"""Exception class for raising errors."""
 	pass
+
+# logger class
+
+class Log(object):
+	"""Logger class.
+
+	Default level: WARNING
+	"""
+
+	_log = None
+
+	def __init__(self):
+		self._log = logging.getLogger('pydor')
+		self._log.setLevel('WARNING')
+
+	def error(self, msg, *args):
+		"""Error messages."""
+		msg = 'ERROR: ' + msg
+		self._log.error(msg, *args)
 
 # filesystem paths manager
 
@@ -65,19 +86,20 @@ class Config(object):
 
 # helper objects
 
+log = Log()
 path = Path()
 config = Config()
 
 # main
 
 def main(filename = 'pydor.ini'):
-	"""Main function for command entrypoint."""
+	"""Main command entrypoint."""
 	try:
 		config.read(filename = filename)
 	except Error as err:
-		print('ERROR:', err, file = sys.stderr)
+		log.error('ERROR: %s', err)
 		return 1
 	return 0
 
-if __name__ == '__main__': # pragma: no cover
-	sys.exit(main())
+if __name__ == '__main__':
+	sys.exit(main()) # pragma: no cover

@@ -9,4 +9,4 @@ PYthon Dependencies vendOR
 .. toctree::
 	:maxdepth: 2
 
-	devel
+	devel/index

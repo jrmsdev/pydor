@@ -103,7 +103,7 @@ class TestMain(TestCase):
 			raise ValueError(level)
 		try:
 			pydor.log.setLevel = mockSetLevel
-			assert pydor.main(['--log', 'invalid']) == pydor.ErrorType['ArgsError'].value
+			assert pydor.main(['--log', 'testing']) == pydor.ErrorType['ArgsError'].value
 		finally:
 			del pydor.log
 			pydor.log = MockLog()
@@ -112,7 +112,7 @@ class TestPydor(TestCase):
 
 	def test_cmd(t):
 		# test it with an error so it doesn't really runs
-		rc = cmdrun(['python3', 'pydor.py', '--log', 'invalid'])
+		rc = cmdrun(['python3', 'pydor.py', '--log', 'testing'])
 		assert rc == pydor.ErrorType['ArgsError'].value
 
 # main

@@ -35,27 +35,33 @@ RUN chgrp -v staff /usr/local/bin
 RUN chmod -v g+ws /usr/local/bin
 
 WORKDIR /home/pydor
-RUN sudo -u pydor mkdir -vp src
+
+RUN sudo -u pydor mkdir -vp src/docs
+COPY --chown=pydor:pydor requirements-dev.txt src
+COPY --chown=pydor:pydor docs/requirements.txt src/docs
+
+RUN sudo -u pydor pip3 install --system --upgrade -r src/requirements-dev.txt
+RUN sudo -u pydor pip3 install --system --upgrade -r src/docs/requirements.txt
+
 COPY --chown=pydor:pydor . src
 
-WORKDIR /home/pydor/src
+RUN (cd src && sudo -u pydor pip3 install --system --upgrade -e .)
 
-RUN sudo -u pydor pip3 install --system --upgrade -r requirements-dev.txt
-RUN sudo -u pydor pip3 install --system --upgrade -r docs/requirements.txt
-RUN sudo -u pydor pip3 install --system --upgrade -e .
-
-RUN rm -rf /home/pydor/.cache/pip
+RUN rm -rf .cache/pip
 
 USER pydor:pydor
-
-RUN echo "PS1='pydor@docker:\W\$ '" >>/home/pydor/.bashrc
-
-RUN echo 'alias vim=vim.tiny' >>/home/pydor/.bashrc
-RUN printf 'syntax on\nset bg=dark\ncolorscheme desert\n' >/home/pydor/.vimrc
+WORKDIR /home/pydor
 
 RUN git config --global alias.st status
 RUN git config --global alias.ci commit
 
+RUN echo "PS1='pydor@docker:\W\$ '" >>.bashrc
+
+RUN echo 'umask 0027' >>.bashrc
+RUN echo 'alias vim=vim.tiny' >>.bashrc
+### RUN printf 'syntax on\nset bg=dark\ncolorscheme desert\n' >.vimrc
+
 RUN pip3 list
 
+WORKDIR /home/pydor/src
 CMD exec /bin/bash -l

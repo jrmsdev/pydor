@@ -9,16 +9,22 @@ __all__ = ['main']
 
 # config manager
 
-class _Config(ConfigParser):
+_ConfigDefault = {
+	'requirements': 'requirements.txt',
+}
+
+class _Config(object):
+	_cfg = None
 
 	def __init__(self):
-		super().__init__(defaults = {},
+		self._cfg = ConfigParser(defaults = {},
 			allow_no_value = False,
 			delimiters = ('=',),
 			comment_prefixes = ('#',),
 			strict = True,
 			interpolation = ExtendedInterpolation(),
 			default_section = 'default')
+		self._cfg['default'] = _ConfigDefault
 
 # helper objects
 

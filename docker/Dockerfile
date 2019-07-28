@@ -13,7 +13,7 @@ RUN apt-get update
 
 RUN apt-get dist-upgrade -y --purge
 RUN apt-get install -y --no-install-recommends sudo python3 python3-pip \
-	git less vim-tiny
+	git less vim-tiny unzip bash-completion
 
 RUN apt-get clean
 RUN apt-get autoremove -y --purge

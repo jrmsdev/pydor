@@ -131,7 +131,8 @@ class CmdArgs(object):
 		return x
 
 	def printUsage(self):
-		self._p.print_usage()
+		msg = self._p.format_usage()
+		log.error(msg)
 
 # global helper objects
 

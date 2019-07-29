@@ -44,11 +44,10 @@ RUN sudo -u pydor pip3 install --system --upgrade -r src/requirements-dev.txt
 COPY --chown=pydor:pydor docs/requirements.txt src/docs
 RUN sudo -u pydor pip3 install --system --upgrade -r src/docs/requirements.txt
 
-### COPY --chown=pydor:pydor requirements.txt src
-### RUN sudo -u pydor pip3 install --system --upgrade -r src/requirements.txt
+COPY --chown=pydor:pydor requirements.txt src
+RUN sudo -u pydor pip3 install --system --upgrade -r src/requirements.txt
 
-COPY --chown=pydor:pydor . src
-
+COPY --chown=pydor:pydor setup.cfg setup.py pydor.py src
 RUN (cd src && sudo -u pydor pip3 install --system --upgrade -e .)
 
 RUN rm -rf .cache/pip
@@ -63,7 +62,6 @@ RUN echo "PS1='pydor@docker:\W\$ '" >>.bashrc
 
 RUN echo 'umask 0027' >>.bashrc
 RUN echo 'alias vim=vim.tiny' >>.bashrc
-### RUN printf 'syntax on\nset bg=dark\ncolorscheme desert\n' >.vimrc
 
 RUN pip3 list
 

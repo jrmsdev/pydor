@@ -7,6 +7,10 @@
 import pydor
 from setuptools import setup
 
+deps = []
+with open('requirements.txt', 'r') as fh:
+	deps = fh.splitlines()
+
 def main():
 	setup(
 		version = pydor.__version__,
@@ -14,7 +18,7 @@ def main():
 		author_email = 'jrmsdev@gmail.com',
 		python_requires = '~=3.6',
 		setup_requires = ['wheel>=0.33'],
-		install_requires = [],
+		install_requires = deps,
 		py_modules = ['pydor'],
 		test_suite = 'pydor_test',
 	)

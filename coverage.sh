@@ -1,4 +1,6 @@
-#!/bin/sh -eu
-REPORT=${1:-'html'}
-PYTHONPATH=${PWD} pytest --cov=. --cov-report=${REPORT}
-exit 0
+#!/bin/sh
+REPORT=${COVFMT}
+if test -z "${REPORT}"; then
+	REPORT='html'
+fi
+PYTHONPATH=${PWD} pytest --cov=. --cov-report=${REPORT} $@

@@ -31,5 +31,5 @@ script:
   - ./check.sh
 
 after_success:
-  - test -z "${CODECOV_TOKEN}" || ./coverage.sh term
+  - test -z "${CODECOV_TOKEN}" || COVFMT='term' ./coverage.sh
   - test -z "${CODECOV_TOKEN}" || codecov

@@ -3,8 +3,9 @@
 
 from configparser import ConfigParser
 from contextlib import contextmanager
-from os import getcwd, path, chdir
+from os import getcwd, path, chdir, devnull
 from subprocess import call as cmdrun
+from sys import executable as pyexe
 from unittest import TestCase, main
 
 import pydor
@@ -56,10 +57,14 @@ def env(name, cfgfn = 'pydor.ini'):
 	envdir = _envDir(name)
 	try:
 		chdir(envdir)
+		del pydor.log
+		pydor.log = MockLog()
 		with _envConfig(name, cfgfn) as cfg:
 			yield cfg
 	finally:
 		chdir(_srcdir)
+		del pydor.log
+		pydor.log = MockLog()
 
 # test errors management
 
@@ -110,25 +115,24 @@ class TestMain(TestCase):
 
 	def test_main(t):
 		with env('cmd/main'):
-			assert pydor.main([]) == 1
+			assert pydor.main(['--log', 'critical']) == 1
 
 	def test_main_error(t):
 		def mockSetLevel(level):
+			assert level == 'testing'
 			raise ValueError(level)
-		try:
+		with env('cmd/main'):
 			pydor.log.setLevel = mockSetLevel
 			rc = pydor.main(['--log', 'testing', 'proxy'])
 			assert rc == pydor.ErrorType['ArgsError'].value
-		finally:
-			del pydor.log
-			pydor.log = MockLog()
 
 class TestPydor(TestCase):
 
 	def test_cmd(t):
 		# test source file is executable
 		# test it with an error so it doesn't really runs
-		rc = cmdrun(['python3', 'pydor.py', 'testing'])
+		cmd = f"{pyexe} pydor.py testing >{devnull} 2>{devnull}"
+		rc = cmdrun(cmd, shell = True)
 		assert rc == 2
 
 # test proxy manager
@@ -136,7 +140,9 @@ class TestPydor(TestCase):
 class TestProxy(TestCase):
 
 	def test_main(t):
-		pydor.main(['proxy'])
+		with env('cmd/proxy'):
+			rc = pydor.main(['proxy'])
+			assert rc == 0
 
 # test main
 

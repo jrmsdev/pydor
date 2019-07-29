@@ -118,11 +118,7 @@ class TestMain(TestCase):
 			assert pydor.main(['--log', 'critical']) == 1
 
 	def test_main_error(t):
-		def mockSetLevel(level):
-			assert level == 'testing'
-			raise ValueError(level)
 		with env('cmd/main'):
-			pydor.log.setLevel = mockSetLevel
 			rc = pydor.main(['--log', 'testing', 'proxy'])
 			assert rc == pydor.ErrorType['ArgsError'].value
 

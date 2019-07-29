@@ -82,7 +82,7 @@ class Config(object):
 
 	def read(self, filename = 'pydor.ini'):
 		"""Read configuration file."""
-		self._readFiles = self._cfg.read(['setup.cfg', filename])
+		self._readFiles = self._cfg.read(('setup.cfg', filename))
 
 # command line args manager
 

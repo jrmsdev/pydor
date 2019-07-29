@@ -2,6 +2,7 @@
 # See LICENSE file.
 
 from configparser import ConfigParser
+from contextlib import contextmanager
 from os import getcwd, path, chdir
 from subprocess import call as cmdrun
 from unittest import TestCase, main
@@ -28,12 +29,43 @@ pydor.log = MockLog()
 
 # setUp / tearDown testing env
 
+def _envDir(env, *parts):
+	d = path.join(_srcdir, 'testdata', env.replace('/', path.sep))
+	if len(parts) > 0:
+		d = path.join(d, *parts)
+	return d
+
 def _setUp(env):
-	envdir = path.join(_srcdir, 'testdata', env.replace('/', path.sep))
-	chdir(envdir)
+	chdir(_envDir(env))
 
 def _tearDown(env):
 	chdir(_srcdir)
+
+# testing config
+
+@contextmanager
+def config(env, filename = 'pydor.ini'):
+	fn = _envDir(env, filename)
+	try:
+		del pydor.config
+		pydor.config = pydor.Config()
+		pydor.config.read(filename = fn)
+		yield pydor.config
+	finally:
+		del pydor.config
+		pydor.config = pydor.Config()
+
+# testing env
+
+@contextmanager
+def env(name):
+	envdir = _envDir(name)
+	try:
+		chdir(envdir)
+		with config(name) as cfg:
+			yield cfg
+	finally:
+		chdir(_srcdir)
 
 # test errors management
 
@@ -70,8 +102,12 @@ class TestConfig(TestCase):
 			'requirements': 'requirements.txt',
 		}
 		assert pydor.config._cfg.sections() == []
+		assert pydor.config._readFiles is None
 
 	def test_read(t):
+		pydor.config.read(filename = 'nofile.ini')
+		assert pydor.config._readFiles == []
+		assert pydor.config._cfg.has_section('pydor')
 		pydor.config.read()
 		assert pydor.config._readFiles == ['pydor.ini']
 		assert pydor.config._cfg.has_section('pydor')
@@ -89,14 +125,9 @@ class TestConfig(TestCase):
 
 class TestMain(TestCase):
 
-	def setUp(t):
-		_setUp('cmd/main')
-
-	def tearDown(t):
-		_tearDown('cmd/main')
-
 	def test_main(t):
-		assert pydor.main([]) == 0
+		with env('cmd/main'):
+			assert pydor.main([]) == 0
 
 	def test_main_error(t):
 		def mockSetLevel(level):

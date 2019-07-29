@@ -14,8 +14,6 @@ _srcdir = path.abspath(getcwd())
 
 # mock pydor.log
 
-pydor.log.setLevel('CRITICAL')
-
 class MockLog(object):
 
 	def setLevel(self, level):
@@ -24,7 +22,9 @@ class MockLog(object):
 	def error(self, msg, *args):
 		pass
 
-del pydor.log
+	def debug(self, msg, *args):
+		pass
+
 pydor.log = MockLog()
 
 # helper funcs

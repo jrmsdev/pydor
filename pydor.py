@@ -96,7 +96,10 @@ class Proxy(object):
 
 	def main(self, args):
 		"""Proxy main method."""
+		log.debug('proxy main')
 		return 0
+
+	# ~ def start(self):
 
 # command line args manager
 
@@ -110,7 +113,7 @@ class CmdArgs(object):
 			description = 'PYthon Dependencies vendOR')
 		self._p.add_argument('--version',
 			action = 'version', version = '%(prog)s version ' + __version__)
-		self._p.add_argument('--debug', type = bool,
+		self._p.add_argument('--debug', action = 'store_true',
 			default = False, help = 'enable all debug settings')
 		self._p.add_argument('--log', help = 'set log level (default: warning)',
 			default = 'warning', metavar = 'level')
@@ -125,12 +128,7 @@ class CmdArgs(object):
 
 	def parseArgs(self, argv):
 		"""Parse command args, then set log level from parsed options."""
-		x = self._p.parse_args(args = argv)
-		try:
-			log.setLevel(x.log.upper())
-		except ValueError:
-			raise Error('ArgsError', f"invalid log level: {x.log}")
-		return x
+		return self._p.parse_args(args = argv)
 
 	def printUsage(self):
 		msg = self._p.format_usage()
@@ -138,7 +136,7 @@ class CmdArgs(object):
 
 # global helper objects
 
-log = logging.getLogger('pydor')
+log = None
 path = Path()
 config = Config()
 proxy = Proxy()
@@ -147,9 +145,22 @@ proxy = Proxy()
 
 def main(argv = None):
 	"""Main command entrypoint."""
+	global log
 	try:
 		parser = CmdArgs()
 		args = parser.parseArgs(argv)
+		logFmt = '%(message)s'
+		if args.debug:
+			args.log = 'debug'
+		if args.log == 'debug':
+			logFmt = '%(module)s:%(lineno)d: %(message)s'
+		logging.basicConfig(format = logFmt, level = logging.WARNING)
+		log = logging.getLogger('pydor')
+		try:
+			log.setLevel(args.log.upper())
+		except ValueError:
+			raise Error('ArgsError', f"invalid log level: {args.log}")
+		log.debug("%s", 'main')
 		config.read()
 		try:
 			cmd = args.command

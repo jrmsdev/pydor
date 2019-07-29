@@ -110,6 +110,8 @@ class CmdArgs(object):
 			description = 'PYthon Dependencies vendOR')
 		self._p.add_argument('--version',
 			action = 'version', version = '%(prog)s version ' + __version__)
+		self._p.add_argument('--debug', type = bool,
+			default = False, help = 'enable all debug settings')
 		self._p.add_argument('--log', help = 'set log level (default: warning)',
 			default = 'warning', metavar = 'level')
 		self.addSubparsers()

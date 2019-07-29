@@ -9,7 +9,7 @@ from setuptools import setup
 
 deps = []
 with open('requirements.txt', 'r') as fh:
-	deps = fh.splitlines()
+	deps = fh.read().splitlines()
 
 def main():
 	setup(

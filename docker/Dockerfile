@@ -37,11 +37,15 @@ RUN chmod -v g+ws /usr/local/bin
 WORKDIR /home/pydor
 
 RUN sudo -u pydor mkdir -vp src/docs
-COPY --chown=pydor:pydor requirements-dev.txt src
-COPY --chown=pydor:pydor docs/requirements.txt src/docs
 
+COPY --chown=pydor:pydor requirements-dev.txt src
 RUN sudo -u pydor pip3 install --system --upgrade -r src/requirements-dev.txt
+
+COPY --chown=pydor:pydor docs/requirements.txt src/docs
 RUN sudo -u pydor pip3 install --system --upgrade -r src/docs/requirements.txt
+
+### COPY --chown=pydor:pydor requirements.txt src
+### RUN sudo -u pydor pip3 install --system --upgrade -r src/requirements.txt
 
 COPY --chown=pydor:pydor . src
 

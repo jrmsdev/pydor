@@ -125,11 +125,12 @@ class TestMain(TestCase):
 class TestPydor(TestCase):
 
 	def test_cmd(t):
+		# test source file is executable
 		# test it with an error so it doesn't really runs
 		rc = cmdrun(['python3', 'pydor.py', '--log', 'testing'])
 		assert rc == pydor.ErrorType['ArgsError'].value
 
-# main
+# test main
 
 if __name__ == '__main__':
 	main()

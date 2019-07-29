@@ -84,41 +84,71 @@ class Config(object):
 		"""Read configuration file."""
 		self._readFiles = self._cfg.read(('setup.cfg', filename))
 
+# pip proxy manager
+
+class Proxy(object):
+	"""Pip proxy/cacher manager."""
+
+	def cmdArgs(self, parser):
+		"""Set parser command line options."""
+		p = parser.add_parser('proxy', help = 'pip proxy/cacher')
+		p.set_defaults(command = 'proxy')
+
 # command line args manager
 
-class CmdArgs(ArgumentParser):
+class CmdArgs(object):
 	"""Manage command line arguments."""
 
-	def __init__(self):
-		super().__init__(prog = 'pydor', description = 'PYthon Dependencies vendOR')
-		self.add_argument('--version',
-			action = 'version', version = '%(prog)s version ' + __version__)
-		self.add_argument('--log', help = 'set log level (default: warning)',
-			default = 'warning', metavar = 'level')
+	_p = None
 
-	def parse_args(self, argv):
+	def __init__(self):
+		self._p = ArgumentParser(prog = 'pydor',
+			description = 'PYthon Dependencies vendOR')
+		self._p.add_argument('--version',
+			action = 'version', version = '%(prog)s version ' + __version__)
+		self._p.add_argument('--log', help = 'set log level (default: warning)',
+			default = 'warning', metavar = 'level')
+		self.addSubparsers()
+
+	def addSubparsers(self):
+		"""Add a subparser with options for sub commands."""
+		p = self._p.add_subparsers(title = 'commands',
+			description = 'run `pydor command -h` for more information',
+			help = 'description')
+		proxy.cmdArgs(p)
+
+	def parseArgs(self, argv):
 		"""Parse command args, then set log level from parsed options."""
-		x = super().parse_args(args = argv)
+		x = self._p.parse_args(args = argv)
 		try:
 			log.setLevel(x.log.upper())
 		except ValueError:
 			raise Error('ArgsError', f"invalid log level: {x.log}")
 		return x
 
+	def printUsage(self):
+		self._p.print_usage()
+
 # global helper objects
 
 log = logging.getLogger('pydor')
 path = Path()
 config = Config()
+proxy = Proxy()
 
 # main
 
 def main(argv = None):
 	"""Main command entrypoint."""
 	try:
-		cmd = CmdArgs()
-		args = cmd.parse_args(argv)
+		parser = CmdArgs()
+		args = parser.parseArgs(argv)
 		config.read()
+		try:
+			cmd = args.command
+		except AttributeError:
+			parser.printUsage()
+			return 1
 	except Error as err:
 		log.error(err)
 		return err.status

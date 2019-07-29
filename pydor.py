@@ -149,18 +149,8 @@ def main(argv = None):
 	try:
 		parser = CmdArgs()
 		args = parser.parseArgs(argv)
-		logFmt = '%(message)s'
-		if args.debug:
-			args.log = 'debug'
-		if args.log == 'debug':
-			logFmt = '%(module)s:%(lineno)d: %(message)s'
-		logging.basicConfig(format = logFmt, level = logging.WARNING)
-		log = logging.getLogger('pydor')
-		try:
-			log.setLevel(args.log.upper())
-		except ValueError:
-			raise Error('ArgsError', f"invalid log level: {args.log}")
-		log.debug("%s", 'main')
+		log = _logInit(args)
+		log.debug('main')
 		config.read()
 		try:
 			cmd = args.command
@@ -174,6 +164,20 @@ def main(argv = None):
 		return err.status
 	# not reached
 	return 99 # pragma: no cover
+
+def _logInit(args):
+	if args.debug:
+		args.log = 'debug'
+	logFmt = '%(message)s'
+	if args.log == 'debug':
+		logFmt = '%(module)s:%(lineno)d: %(message)s'
+	logging.basicConfig(format = logFmt, level = logging.WARNING)
+	log = logging.getLogger('pydor')
+	try:
+		log.setLevel(args.log.upper())
+	except ValueError:
+		raise Error('ArgsError', f"invalid log level: {args.log}")
+	return log
 
 if __name__ == '__main__':
 	sys.exit(main())

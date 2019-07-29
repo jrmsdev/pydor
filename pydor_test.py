@@ -7,7 +7,9 @@ from os import getcwd, path, chdir, devnull
 from subprocess import call as cmdrun
 from sys import executable as pyexe
 from unittest import TestCase, main
+from unittest.mock import Mock
 
+import logging
 import pydor
 import pytest
 
@@ -121,6 +123,12 @@ class TestMain(TestCase):
 		with env('cmd/main'):
 			rc = pydor.main(['--log', 'testing', 'proxy'])
 			assert rc == pydor.ErrorType['ArgsError'].value
+
+	def test_log_debug(t):
+		args = Mock()
+		args.log = 'debug'
+		log = pydor._logInit(args)
+		assert log.isEnabledFor(logging.DEBUG)
 
 class TestPydor(TestCase):
 

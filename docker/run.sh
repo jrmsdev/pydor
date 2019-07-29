@@ -11,6 +11,7 @@ fi
 docker run -it --rm -u pydor \
 	--name=${NAME} \
 	--hostname=${NAME} \
+	-p 127.0.0.1:3737:3737 \
 	-v ${PWD}:/home/pydor/src \
 	${IMAGE} $@
 exit 0

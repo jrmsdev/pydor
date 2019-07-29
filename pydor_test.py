@@ -145,8 +145,15 @@ class TestProxy(TestCase):
 
 	def test_main(t):
 		with env('cmd/proxy'):
-			rc = pydor.main(['proxy'])
-			assert rc == 0
+			try:
+				orig_wapp = pydor.proxy._wapp
+				pydor.proxy._wapp = Mock()
+				pydor.proxy._wapp.run = Mock()
+				rc = pydor.main(['proxy'])
+				assert rc == 0
+			finally:
+				del pydor.proxy._wapp
+				pydor.proxy._wapp = orig_wapp
 
 # test main
 

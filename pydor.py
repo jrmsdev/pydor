@@ -10,6 +10,7 @@ __author__ = 'Jeremías Casteglione <jrmsdev@gmail.com>'
 __license__ = 'BSD'
 __version__ = '0.0'
 
+import bottle
 import enum
 import logging
 import sys
@@ -89,17 +90,29 @@ class Config(object):
 class Proxy(object):
 	"""Pip proxy/cacher manager."""
 
+	_wapp = None
+
+	def __init__(self):
+		self._wapp = bottle.Bottle()
+
 	def cmdArgs(self, parser):
 		"""Set parser command line options."""
 		p = parser.add_parser('proxy', help = 'pip proxy/cacher')
 		p.set_defaults(command = 'proxy')
+		p.add_argument('--host', help = 'bind to host name/address',
+			default = 'localhost', metavar = 'localhost')
+		p.add_argument('--port', help = 'bind to host port',
+			type = int, default = 3737, metavar = 3737)
 
 	def main(self, args):
 		"""Proxy main method."""
 		log.debug('proxy main')
+		self.start(args.host, args.port, args.debug)
 		return 0
 
-	# ~ def start(self):
+	def start(self, host, port, debug):
+		self._wapp.run(host = host, port = port, debug = debug,
+			reloader = debug, quiet = not debug)
 
 # command line args manager
 

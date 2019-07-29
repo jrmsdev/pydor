@@ -19,11 +19,12 @@ from configparser import ConfigParser, ExtendedInterpolation
 from os import path as ospath
 
 __all__ = (
-	'ErrorType',
-	'Error',
-	'Path',
-	'Config',
 	'CmdArgs',
+	'Config',
+	'Error',
+	'ErrorType',
+	'Path',
+	'Proxy',
 	'main',
 )
 
@@ -32,8 +33,7 @@ __all__ = (
 @enum.unique
 class ErrorType(enum.Enum):
 	"""Map error types with exit return status."""
-	ConfigError = 10
-	ArgsError = 11
+	ArgsError = 10
 
 class Error(Exception):
 	"""Base class for raising errors."""
@@ -94,6 +94,10 @@ class Proxy(object):
 		p = parser.add_parser('proxy', help = 'pip proxy/cacher')
 		p.set_defaults(command = 'proxy')
 
+	def main(self, args):
+		"""Proxy main method."""
+		return 0
+
 # command line args manager
 
 class CmdArgs(object):
@@ -149,10 +153,13 @@ def main(argv = None):
 		except AttributeError:
 			parser.printUsage()
 			return 1
+		if cmd == 'proxy':
+			return proxy.main(args)
 	except Error as err:
 		log.error(err)
 		return err.status
-	return 0
+	# not reached
+	return 99 # pragma: no cover
 
 if __name__ == '__main__':
 	sys.exit(main())

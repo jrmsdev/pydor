@@ -66,11 +66,11 @@ def env(name, cfgfn = 'pydor.ini'):
 class TestError(TestCase):
 
 	def test_default(t):
-		err = pydor.Error('ConfigError', 'testing')
-		assert err._typ == 'ConfigError'
+		err = pydor.Error('ArgsError', 'testing')
+		assert err._typ == 'ArgsError'
 		assert err.status == 10
-		assert err.status == pydor.ErrorType.ConfigError.value
-		assert str(err) == 'ConfigError: testing'
+		assert err.status == pydor.ErrorType.ArgsError.value
+		assert str(err) == 'ArgsError: testing'
 
 # test pydor.path
 
@@ -110,14 +110,15 @@ class TestMain(TestCase):
 
 	def test_main(t):
 		with env('cmd/main'):
-			assert pydor.main([]) == 0
+			assert pydor.main([]) == 1
 
 	def test_main_error(t):
 		def mockSetLevel(level):
 			raise ValueError(level)
 		try:
 			pydor.log.setLevel = mockSetLevel
-			assert pydor.main(['--log', 'testing']) == pydor.ErrorType['ArgsError'].value
+			rc = pydor.main(['--log', 'testing', 'proxy'])
+			assert rc == pydor.ErrorType['ArgsError'].value
 		finally:
 			del pydor.log
 			pydor.log = MockLog()
@@ -127,8 +128,15 @@ class TestPydor(TestCase):
 	def test_cmd(t):
 		# test source file is executable
 		# test it with an error so it doesn't really runs
-		rc = cmdrun(['python3', 'pydor.py', '--log', 'testing'])
-		assert rc == pydor.ErrorType['ArgsError'].value
+		rc = cmdrun(['python3', 'pydor.py', 'testing'])
+		assert rc == 2
+
+# test proxy manager
+
+class TestProxy(TestCase):
+
+	def test_main(t):
+		pydor.main(['proxy'])
 
 # test main
 

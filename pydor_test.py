@@ -27,7 +27,7 @@ class MockLog(object):
 del pydor.log
 pydor.log = MockLog()
 
-# setUp / tearDown testing env
+# helper funcs
 
 def _envDir(env, *parts):
 	d = path.join(_srcdir, 'testdata', env.replace('/', path.sep))
@@ -35,16 +35,10 @@ def _envDir(env, *parts):
 		d = path.join(d, *parts)
 	return d
 
-def _setUp(env):
-	chdir(_envDir(env))
-
-def _tearDown(env):
-	chdir(_srcdir)
-
 # testing config
 
 @contextmanager
-def config(env, filename = 'pydor.ini'):
+def _envConfig(env, filename):
 	fn = _envDir(env, filename)
 	try:
 		del pydor.config
@@ -58,11 +52,11 @@ def config(env, filename = 'pydor.ini'):
 # testing env
 
 @contextmanager
-def env(name):
+def env(name, cfgfn = 'pydor.ini'):
 	envdir = _envDir(name)
 	try:
 		chdir(envdir)
-		with config(name) as cfg:
+		with _envConfig(name, cfgfn) as cfg:
 			yield cfg
 	finally:
 		chdir(_srcdir)
@@ -89,37 +83,26 @@ class TestPath(TestCase):
 
 class TestConfig(TestCase):
 
-	def setUp(t):
-		_setUp('config')
-
-	def tearDown(t):
-		_tearDown('config')
-
 	def test_default(t):
-		assert isinstance(pydor.config, pydor.Config)
-		assert isinstance(pydor.config._cfg, ConfigParser)
-		assert pydor.config._cfg.defaults() == {
-			'requirements': 'requirements.txt',
-		}
-		assert pydor.config._cfg.sections() == []
-		assert pydor.config._readFiles is None
+		with env('config', 'nofile.ini') as cfg:
+			assert isinstance(cfg, pydor.Config)
+			assert isinstance(cfg._cfg, ConfigParser)
+			assert cfg._cfg.defaults() == {
+				'requirements': 'requirements.txt',
+			}
+			assert cfg._cfg.sections() == []
+			assert cfg._readFiles == []
+			assert not cfg._cfg.has_section('pydor')
 
 	def test_read(t):
-		pydor.config.read(filename = 'nofile.ini')
-		assert pydor.config._readFiles == []
-		assert pydor.config._cfg.has_section('pydor')
-		pydor.config.read()
-		assert pydor.config._readFiles == ['pydor.ini']
-		assert pydor.config._cfg.has_section('pydor')
+		with env('config') as cfg:
+			assert cfg._readFiles[0].endswith('pydor.ini')
+			assert cfg._cfg.has_section('pydor')
 
 	def test_other_files(t):
-		try:
-			_setUp('config.other_files')
-			pydor.config.read()
-			assert pydor.config._readFiles == ['setup.cfg']
-			assert pydor.config._cfg.has_section('pydor')
-		finally:
-			_tearDown('config.other_files')
+		with env('config.other_files', 'setup.cfg') as cfg:
+			assert cfg._readFiles[0].endswith('setup.cfg')
+			assert cfg._cfg.has_section('pydor')
 
 # test pydor commands
 
